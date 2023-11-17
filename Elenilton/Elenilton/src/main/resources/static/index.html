@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Compras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffd369;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 800px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .formulario {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .formulario input[type="text"],
+        .formulario input[type="number"],
+        .formulario button {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .formulario button {
+            background-color: #6b5b95;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .formulario button:hover {
+            background-color: #594f4f;
+        }
+
+        .lista {
+            width: 100%;
+        }
+
+        .lista h2 {
+            color: #6b5b95;
+            margin-bottom: 10px;
+        }
+
+        .lista ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .lista li {
+            margin-bottom: 5px;
+        }
+
+        label {
+            margin-left: 5px;
+        }
+
+        .lista button {
+            margin-top: 10px;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: #6b5b95;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .lista button:hover {
+            background-color: #594f4f;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Lista de Compras</h1>
+
+        <div class="formulario">
+            <input type="text" id="nomeInput" placeholder="Nome do item (apenas caracteres)">
+            <input type="number" id="valorInput" placeholder="Valor do item">
+            <input type="number" id="quantidadeInput" placeholder="Quantidade (apenas números)">
+            <button onclick="adicionarItem()">Adicionar Item</button>
+        </div>
+
+        <div class="lista">
+            <h2>Itens:</h2>
+            <ul id="listaItens"></ul>
+            <button onclick="removerItensSelecionados()">Remover Itens Selecionados</button>
+            <button class="concluir" onclick="concluirLista()">Concluir Lista</button>
+        </div>
+    </main>
+
+    <script>
+        let itens = [];
+
+        function adicionarItem() {
+            const nomeInput = document.getElementById("nomeInput");
+            const valorInput = document.getElementById("valorInput");
+            const quantidadeInput = document.getElementById("quantidadeInput");
+
+            const nomeItem = nomeInput.value.trim();
+            const valorItem = valorInput.value.trim();
+            const quantidadeItem = quantidadeInput.value.trim();
+
+            if (nomeItem !== '' && /^[a-zA-Z\s]+$/.test(nomeItem) && valorItem !== '' && /^[0-9.]+$/.test(valorItem) && quantidadeItem !== '' && /^[0-9]+$/.test(quantidadeItem)) {
+                itens.push({ nome: nomeItem, valor: parseFloat(valorItem), quantidade: parseInt(quantidadeItem), selecionado: false });
+                nomeInput.value = '';
+                valorInput.value = '';
+                quantidadeInput.value = '';
+                exibirItens();
+            } else {
+                alert("Por favor, insira o Nome, um valor e uma quantidade.");
+            }
+        }
+
+        function exibirItens() {
+            const listaItens = document.getElementById("listaItens");
+            listaItens.innerHTML = '';
+
+            itens.forEach((item, index) => {
+                const novoItem = document.createElement("li");
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = item.selecionado;
+                checkbox.onclick = () => selecionarItem(index);
+
+                const label = document.createElement("label");
+                label.textContent = `${item.nome} - Quantidade: ${item.quantidade} - Valor: ${item.valor}`;
+
+                novoItem.appendChild(checkbox);
+                novoItem.appendChild(label);
+
+                listaItens.appendChild(novoItem);
+            });
+        }
+
+        function selecionarItem(index) {
+            itens[index].selecionado = !itens[index].selecionado;
+            exibirItens();
+        }
+
+        function removerItensSelecionados() {
+            itens = itens.filter(item => !item.selecionado);
+            exibirItens();
+        }
+
+        function concluirLista() {
+            const todasSelecionadas = itens.length > 0 && itens.every(item => item.selecionado);
+            if (todasSelecionadas) {
+                alert("A lista de compras foi concluída");
+                limparLista();
+                exibirItens();
+            } else {
+                alert("Por favor, marque todos os itens como concluídos antes de limpar a lista.");
+            }
+        }
+
+        function limparLista() {
+            itens = [];
+            exibirItens();
+        }
+    </script>
+</body>
+</html>
